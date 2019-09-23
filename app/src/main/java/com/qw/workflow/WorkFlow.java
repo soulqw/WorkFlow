@@ -40,7 +40,7 @@ public class WorkFlow {
      */
     public void start() {
         if (isDisposed) {
-            throw new IllegalStateException("you can not start a disposed workflow");
+            throw new IllegalStateException("you can not operate a disposed workflow");
         }
         startWithNode(flowNodes.keyAt(0));
     }
@@ -52,7 +52,7 @@ public class WorkFlow {
      */
     public void startWithNode(int startNodeId) {
         if (isDisposed) {
-            throw new IllegalStateException("you can not start a disposed workflow");
+            throw new IllegalStateException("you can not operate a disposed workflow");
         }
         if (flowNodes.indexOfKey(startNodeId) < 0 || flowNodes.size() == 0) {
             return;
@@ -75,10 +75,27 @@ public class WorkFlow {
      */
     public void continueWork() {
         if (isDisposed) {
-            throw new IllegalStateException("you can not start a disposed workflow");
+            throw new IllegalStateException("you can not operate a disposed workflow");
         }
-        if (recentNode != null) {
+        if (null != recentNode) {
             recentNode.onCompleted();
+        }
+    }
+
+    /**
+     * 回退
+     * 基于最近节点回退至上一节点
+     */
+    public void revert() {
+        if (isDisposed) {
+            throw new IllegalStateException("you can not operate a disposed workflow");
+        }
+        if (null != recentNode && null != flowNodes) {
+            int recentIndex = flowNodes.indexOfValue(recentNode);
+            int targetId = flowNodes.keyAt(recentIndex - 1);
+            if (targetId >= 0) {
+                startWithNode(targetId);
+            }
         }
     }
 

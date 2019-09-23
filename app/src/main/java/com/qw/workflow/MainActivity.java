@@ -2,10 +2,13 @@ package com.qw.workflow;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,57 +46,68 @@ public class MainActivity extends AppCompatActivity {
                 .withNode(WorkNode.build(1, new Worker() {
                     @Override
                     public void doWork(Node current) {
-                        Log.d(TAG, "this is node " + current.getId() + " executed");
+                        Log.d(TAG, "this is node " + current.getId() + " executed. thread:" + Thread.currentThread().getName());
+                        try {
+                            Thread.sleep(3000);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        // workflow will execute the next node when called onCompleted
                         current.onCompleted();
                     }
                 }))
                 .withNode(WorkNode.build(2, new Worker() {
                     @Override
                     public void doWork(Node current) {
-                        Log.d(TAG, "this is node " + current.getId() + " executed");
-                        try {
-                            Thread.sleep(3000);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        Log.d(TAG, "this is node " + current.getId() + " executed. thread:" + Thread.currentThread().getName());
                         current.onCompleted();
                     }
                 }))
                 .withNode(WorkNode.build(4, new Worker() {
                     @Override
                     public void doWork(Node current) {
-                        Log.d(TAG, "this is node " + current.getId() + " executed");
+                        Log.d(TAG, "this is node " + current.getId() + " executed. thread:" + Thread.currentThread().getName());
                         current.onCompleted();
                     }
                 }))
                 .withNode(WorkNode.build(3, new Worker() {
                     @Override
                     public void doWork(Node current) {
-                        Log.d(TAG, "this is node " + current.getId() + " executed");
+                        Log.d(TAG, "this is node " + current.getId() + " executed. thread:" + Thread.currentThread().getName());
                         new AlertDialog.Builder(MainActivity.this)
-                                .setMessage("选择接下来做什么")
-                                .setNegativeButton("停止", new DialogInterface.OnClickListener() {
+                                .setTitle("选择接下来做什么")
+                                .setCancelable(false)
+                                .setItems(new String[]{
+                                        "停止",
+                                        "执行节点 5",
+                                        "继续执行下一个",
+                                        "回退",
+                                }, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        workFlow.dispose();
+                                        switch (i) {
+                                            case 0:
+                                                workFlow.dispose();
+                                                break;
+                                            case 1:
+                                                workFlow.startWithNode(5);
+                                                break;
+                                            case 2:
+                                                workFlow.continueWork();
+                                                break;
+                                            case 3:
+                                                workFlow.revert();
+                                                break;
+                                        }
+                                        dialogInterface.dismiss();
                                     }
-                                }).setNeutralButton("执行节点 5", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                workFlow.startWithNode(5);
-                            }
-                        }).setPositiveButton("继续执行下一个", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                workFlow.continueWork();
-                            }
-                        }).create().show();
+                                }).create().show();
                     }
                 }))
                 .withNode(WorkNode.build(5, new Worker() {
                     @Override
                     public void doWork(final Node current) {
-                        Log.d(TAG, "this is node " + current.getId() + " executed");
+                        Log.d(TAG, "this is node " + current.getId() + " executed. thread:" + Thread.currentThread().getName());
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -110,7 +124,14 @@ public class MainActivity extends AppCompatActivity {
                 .withNode(WorkNode.build(6, new Worker() {
                     @Override
                     public void doWork(final Node current) {
-                        Log.d(TAG, "this is node " + current.getId() + " executed");
+                        Log.d(TAG, "this is node " + current.getId() + " executed. thread:" + Thread.currentThread().getName());
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "this is node " + current.getId() + " executed", Toast.LENGTH_SHORT).show();
+                                current.onCompleted();
+                            }
+                        });
                     }
                 }))
                 .create();
