@@ -1,4 +1,4 @@
-package com.qw.workflow;
+package com.qw.demo;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -15,6 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.qw.workflow.Node;
+import com.qw.workflow.WorkFlow;
+import com.qw.workflow.WorkNode;
+import com.qw.workflow.Worker;
 
 public class MainActivity extends AppCompatActivity {
 
