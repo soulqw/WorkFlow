@@ -14,7 +14,7 @@ public class WorkFlow {
 
     private SparseArray<WorkNode> flowNodes;
 
-    private volatile WorkNode recentNode;
+    private WorkNode recentNode;
 
     private boolean isDisposed = false;
 
@@ -33,6 +33,18 @@ public class WorkFlow {
             recentNode = null;
         }
         this.isDisposed = true;
+    }
+
+    /**
+     * 给workflow添加一个工作节点
+     *
+     * @param workNode 节点
+     */
+    public void addNode(WorkNode workNode) {
+        if (isDisposed) {
+            throw new IllegalStateException("you can not operate a disposed workflow");
+        }
+        flowNodes.append(workNode.getId(), workNode);
     }
 
     /**

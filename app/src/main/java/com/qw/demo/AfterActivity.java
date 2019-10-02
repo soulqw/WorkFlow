@@ -24,10 +24,19 @@ public class AfterActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_H5 = 1;
 
+    /**
+     * 初次广告弹框
+     */
     private static final int NODE_FIRST_AD = 10;
 
+    /**
+     * 初次进入h5页
+     */
     private static final int NODE_CHECK_H5 = 20;
 
+    /**
+     * 初次进入的注册协议
+     */
     private static final int NODE_REGISTER_AGREEMENT = 30;
 
     private WorkFlow workFlow;
@@ -38,6 +47,15 @@ public class AfterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_compare);
         ((TextView) findViewById(R.id.tv_desc)).setText("使用后");
         startWorkFlow();
+    }
+
+    private void startWorkFlow() {
+        workFlow = new WorkFlow.Builder()
+                .withNode(getFirstAdNode())
+                .withNode(getShowRegisterAgreementNode())
+                .withNode(getShowH5Node())
+                .create();
+        workFlow.start();
     }
 
     private WorkNode getFirstAdNode() {
@@ -53,6 +71,7 @@ public class AfterActivity extends AppCompatActivity {
                                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                                     @Override
                                     public void onDismiss(DialogInterface dialogInterface) {
+                                        //仅仅只需关心自己是否完成，下一个节点会自动执行
                                         current.onCompleted();
                                     }
                                 }).create().show();
@@ -60,6 +79,7 @@ public class AfterActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure() {
+                        //仅仅只需关心自己是否完成，下一个节点会自动执行
                         current.onCompleted();
                     }
                 });
@@ -111,15 +131,6 @@ public class AfterActivity extends AppCompatActivity {
                 });
             }
         }));
-    }
-
-    private void startWorkFlow() {
-        workFlow = new WorkFlow.Builder()
-                .withNode(getFirstAdNode())
-                .withNode(getShowRegisterAgreementNode())
-                .withNode(getShowH5Node())
-                .create();
-        workFlow.start();
     }
 
     @Override
