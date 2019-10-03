@@ -5,7 +5,6 @@ package com.qw.workflow;
  * 工作节点
  *
  * @author cd5160866
- * @date 2019-09-03
  */
 public class WorkNode implements Node {
 

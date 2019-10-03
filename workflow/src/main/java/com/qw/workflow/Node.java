@@ -2,7 +2,6 @@ package com.qw.workflow;
 
 /**
  * @author cd5160866
- * @date 2019-09-03
  */
 public interface Node {
 
