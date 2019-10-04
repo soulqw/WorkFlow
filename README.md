@@ -1,7 +1,6 @@
 # WorkFlow
 
  [![Hex.pm](https://img.shields.io/badge/download-0.0.1-green)](https://www.apache.org/licenses/LICENSE-2.0)
-
  [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)]()
 
 #### 简化顺序调用方法之间的嵌套和耦合：
@@ -154,12 +153,9 @@ public class AfterActivity extends AppCompatActivity {
 }
 
 ```
-
 ###  效果：
 
 ![image](https://img-blog.csdnimg.cn/20190930234247563.gif)
-
-
 
 ### 流程：
 
