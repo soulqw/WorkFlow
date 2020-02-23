@@ -18,8 +18,14 @@ public class WorkFlow {
 
     private boolean isDisposed = false;
 
+    private FlowCallBack callBack;
+
     public WorkFlow(SparseArray<WorkNode> flowNodes) {
         this.flowNodes = flowNodes;
+    }
+
+    public void setCallBack(FlowCallBack callBack) {
+        this.callBack = callBack;
     }
 
     /**
@@ -33,6 +39,7 @@ public class WorkFlow {
             recentNode = null;
         }
         this.isDisposed = true;
+        this.callBack = null;
     }
 
     /**
@@ -67,6 +74,7 @@ public class WorkFlow {
             throw new IllegalStateException("you can not operate a disposed workflow");
         }
         if (flowNodes.indexOfKey(startNodeId) < 0 || flowNodes.size() == 0) {
+            DevTools.w(TAG, "there is no node in workFlow");
             return;
         }
         reset();
@@ -79,6 +87,9 @@ public class WorkFlow {
                 findAndExecuteNextNodeIfExist(startIndex);
             }
         });
+        if (null != callBack) {
+            callBack.onNodeChanged(startNode.getId());
+        }
     }
 
     /**
@@ -138,6 +149,13 @@ public class WorkFlow {
                     findAndExecuteNextNodeIfExist(nextIndex);
                 }
             });
+            if (null != callBack) {
+                callBack.onNodeChanged(nextNode.getId());
+            }
+            return;
+        }
+        if (null != callBack) {
+            callBack.onFlowFinish();
         }
     }
 
@@ -149,9 +167,27 @@ public class WorkFlow {
         }
     }
 
+    public interface FlowCallBack {
+
+        /**
+         * 当节点触发变化时调用
+         *
+         * @param nodeId 你定义当节点id
+         */
+        void onNodeChanged(int nodeId);
+
+        /**
+         * 当所有节点执行完成后触发
+         */
+        void onFlowFinish();
+
+    }
+
     public static class Builder {
 
         private SparseArray<WorkNode> f;
+
+        private FlowCallBack cb;
 
         public Builder() {
             this.f = new SparseArray<>();
@@ -162,8 +198,15 @@ public class WorkFlow {
             return this;
         }
 
+        public Builder setCallBack(FlowCallBack callBack) {
+            this.cb = callBack;
+            return this;
+        }
+
         public WorkFlow create() {
-            return new WorkFlow(f);
+            WorkFlow workFlow = new WorkFlow(f);
+            workFlow.setCallBack(cb);
+            return workFlow;
         }
     }
 

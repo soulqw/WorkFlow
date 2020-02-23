@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -54,7 +55,18 @@ public class AfterActivity extends AppCompatActivity {
                 .withNode(getFirstAdNode())
                 .withNode(getShowRegisterAgreementNode())
                 .withNode(getShowH5Node())
-                .create();
+                //设置回调监听
+                .setCallBack(new WorkFlow.FlowCallBack() {
+                    @Override
+                    public void onNodeChanged(int nodeId) {
+                        Toast.makeText(AfterActivity.this, "当前节点：" + nodeId, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFlowFinish() {
+                        Toast.makeText(AfterActivity.this, "所有节点执行完成", Toast.LENGTH_SHORT).show();
+                    }
+                }).create();
         workFlow.start();
     }
 
