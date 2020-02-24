@@ -1,6 +1,6 @@
 # WorkFlow
 
- [![Hex.pm](https://img.shields.io/badge/download-0.0.1-green)](https://www.apache.org/licenses/LICENSE-2.0)
+ [![Hex.pm](https://img.shields.io/badge/download-0.0.2-green)](https://www.apache.org/licenses/LICENSE-2.0)
  [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)]()
 
 #### 简化顺序调用方法之间的嵌套和耦合：
@@ -14,16 +14,90 @@
 
 ```java
 dependencies {
-     implementation 'com.qw:workflow:0.0.1'
+     implementation 'com.qw:workflow:0.0.2'
 }
 
 ```
 
 ## Usage：
 
-#### 场景示例
+#### 场景示例1
+依次顺序的展示Toast，Dialog，SnackBar：
 
-- 进入APP首页按顺序请求3个接口,第一个接口和第三个接口成功后启动对话框,第二个接口跳转到Web页面
+```java
+    private static final int STEP_TOAST = 1;
+
+    private static final int STEP_DIALOG = 2;
+
+    private static final int STEP_SNACK_BAR = 3;
+
+    private void startWorkFlow() {
+        new WorkFlow.Builder()
+                .withNode(WorkNode.build(STEP_TOAST, new Worker() {
+                    @Override
+                    public void doWork(final Node current) {
+                        //do any work you want
+                        Toast.makeText(MainActivity.this, "step for toast", Toast.LENGTH_SHORT).show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                //call it when finish work
+                                current.onCompleted();
+                            }
+                        }, 2000);
+
+                    }
+                }))
+                .withNode(WorkNode.build(STEP_SNACK_BAR, new Worker() {
+                    @Override
+                    public void doWork(final Node current) {
+                        Snackbar.make(findViewById(R.id.btn_after), "step for snack_bar", Snackbar.LENGTH_SHORT).show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                current.onCompleted();
+                            }
+                        }, 2000);
+                    }
+                }))
+                .withNode(WorkNode.build(STEP_DIALOG, new Worker() {
+                    @Override
+                    public void doWork(final Node current) {
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("step for show dialog")
+                                .setPositiveButton("complete", null)
+                                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialogInterface) {
+                                        current.onCompleted();
+                                    }
+                                }).create().show();
+                    }
+                })).create()
+                .start();
+    }
+```
+
+效果如图：
+
+![image](https://upload-images.jianshu.io/upload_images/11595074-2001727ab83da1e5.gif?imageMogr2/auto-orient/strip)
+
+假如现在需要让Dialog和SnackBar，替换位置，只需要让Dialog定义值比SnackBar即可：
+
+```java
+    private static final int STEP_TOAST = 1;
+
+    private static final int STEP_DIALOG = 20;
+
+    private static final int STEP_SNACK_BAR = 3;
+```
+
+效果如下：
+
+![image](https://upload-images.jianshu.io/upload_images/11595074-6e2c294a0d584ccc.gif?imageMogr2/auto-orient/strip)
+
+#### 场景示例2
+进入APP首页按顺序请求3个接口,第一个接口和第三个接口成功后启动对话框,第二个接口跳转到Web页面
 
 ```java
 public class AfterActivity extends AppCompatActivity {

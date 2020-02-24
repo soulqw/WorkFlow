@@ -11,7 +11,7 @@
 
     <Button
         android:id="@+id/btn_before"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:text="before"
@@ -19,9 +19,16 @@
 
     <Button
         android:id="@+id/btn_after"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="after"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_simple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="simple_test"
         android:textAllCaps="false" />
 
 </LinearLayout>
