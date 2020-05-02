@@ -2,6 +2,8 @@ package com.qw.workflow;
 
 import android.util.SparseArray;
 
+import com.qw.workflow.exception.UnSupportOperateException;
+
 /**
  * 工作流
  * https://github.com/soulqw/WorkFlow
@@ -49,7 +51,7 @@ public class WorkFlow {
      */
     public void addNode(WorkNode workNode) {
         if (isDisposed) {
-            throw new IllegalStateException("you can not operate a disposed workflow");
+            throw new UnSupportOperateException();
         }
         flowNodes.append(workNode.getId(), workNode);
     }
@@ -59,7 +61,7 @@ public class WorkFlow {
      */
     public void start() {
         if (isDisposed) {
-            throw new IllegalStateException("you can not operate a disposed workflow");
+            throw new UnSupportOperateException();
         }
         startWithNode(flowNodes.keyAt(0));
     }
@@ -71,11 +73,10 @@ public class WorkFlow {
      */
     public void startWithNode(int startNodeId) {
         if (isDisposed) {
-            throw new IllegalStateException("you can not operate a disposed workflow");
+            throw new UnSupportOperateException();
         }
         if (flowNodes.indexOfKey(startNodeId) < 0 || flowNodes.size() == 0) {
-            DevTools.w(TAG, "there is no node in workFlow");
-            return;
+            throw new UndefinedNodeException(startNodeId);
         }
         reset();
         final int startIndex = flowNodes.indexOfKey(startNodeId);
@@ -98,7 +99,7 @@ public class WorkFlow {
      */
     public void continueWork() {
         if (isDisposed) {
-            throw new IllegalStateException("you can not operate a disposed workflow");
+            throw new UnSupportOperateException();
         }
         if (null != recentNode) {
             recentNode.onCompleted();
@@ -111,7 +112,7 @@ public class WorkFlow {
      */
     public void revert() {
         if (isDisposed) {
-            throw new IllegalStateException("you can not operate a disposed workflow");
+            throw new UnSupportOperateException();
         }
         if (null != recentNode && null != flowNodes) {
             int recentIndex = flowNodes.indexOfValue(recentNode);
@@ -140,7 +141,11 @@ public class WorkFlow {
 
     private void findAndExecuteNextNodeIfExist(int startIndex) {
         final int nextIndex = startIndex + 1;
-        final WorkNode nextNode = flowNodes.valueAt(nextIndex);
+        WorkNode temple = null;
+        if (nextIndex < flowNodes.size()) {
+            temple = flowNodes.valueAt(nextIndex);
+        }
+        final WorkNode nextNode = temple;
         if (null != nextNode) {
             this.recentNode = nextNode;
             nextNode.doWork(new WorkNode.WorkCallBack() {
