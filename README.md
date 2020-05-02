@@ -1,6 +1,6 @@
 # WorkFlow
 
- [![Hex.pm](https://img.shields.io/badge/download-0.0.2-green)](https://www.apache.org/licenses/LICENSE-2.0)
+ [![Hex.pm](https://img.shields.io/badge/download-0.0.3-green)](https://www.apache.org/licenses/LICENSE-2.0)
  [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)]()
 
 #### 简化顺序调用方法之间的嵌套和耦合：
@@ -14,7 +14,7 @@
 
 ```java
 dependencies {
-     implementation 'com.qw:workflow:0.0.2'
+     implementation 'com.qw:workflow:0.0.3'
 }
 
 ```
