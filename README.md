@@ -298,6 +298,5 @@ public class AfterActivity extends AppCompatActivity {
 #### [工作原理和最佳示例](https://blog.csdn.net/u014626094/article/details/101697305)
 ##### 交流QQ群：714178759
 
-[GitHub地址](https://github.com/soulqw/WorkFlow)
 
 
