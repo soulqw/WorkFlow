@@ -12,7 +12,7 @@
 
 ```java
 dependencies {
-     implementation 'com.qw:workflow:0.0.4'
+     implementation 'com.github.soulqw:WorkFlow:0.0.4'
 }
 
 ```
